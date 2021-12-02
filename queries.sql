@@ -126,6 +126,39 @@ SELECT name FROM animals A JOIN owners O ON O.id = A.owner_id WHERE O.full_name 
 
 SELECT full_name, COUNT (*) as number_of_animals FROM owners O JOIN animals A ON A.owner_id = O.id GROUP BY full_name ORDER BY 2 DESC LIMIT 1;
 
+/* Who was the last animal seen by William Tatcher? */
 
+SELECT A.name, MAX(date_of_visit) AS last_visit_date FROM animals A JOIN visits V ON A.id = V.animal_id WHERE V.vet_id = 1 GROUP BY A.name ORDER BY 2 DESC LIMIT 1;
 
+/* How many different animals did Stephanie Mendez see? */
+
+SELECT count(animal_id) AS animals_seen FROM visits WHERE vet_id = 3;
+
+/* List all vets and their specialties, including vets with no specialties. */
+
+SELECT V.name, S.specie_id FROM vets V FULL JOIN specializations S ON V.id = S.vet_id;
+
+/* List all animals that visited Stephanie Mendez between April 1st and August 30th, 2020. */
+
+SELECT A.name FROM animals A JOIN visits V ON A.id = V.animal_id WHERE V.date_of_visit BETWEEN '2020-04-01' AND '2020-08-30';
+
+/* What animal has the most visits to vets? */
+
+SELECT A.name, COUNT(animal_id) AS visit_times FROM visits V JOIN animals A ON A.id = V.animal_id GROUP BY A.name ORDER BY 2 DESC LIMIT 1;
+
+/* Who was Maisy Smith's first visit? */
+
+SELECT A.name, MIN(V.date_of_visit) AS first_visit FROM visits V JOIN animals A ON A.id = V.animal_id WHERE V.vet_id = 2 GROUP BY A.name LIMIT 1;
+
+/* Details for most recent visit: animal information, vet information, and date of visit. */
+
+SELECT A.*, VT.*, date_of_visit FROM visits V JOIN animals A ON V.animal_id = A.id JOIN vets VT ON VT.id = V.vet_id WHERE V.date_of_visit = (SELECT MAX(date_of_visit) FROM visits);
+
+/* How many visits were with a vet that did not specialize in that animal's species? */
+
+SELECT COUNT(*) AS total FROM animals A JOIN visits V ON A.id = V.animal_id JOIN specializations S ON S.vet_id = V.vet_id WHERE A.species_id != S.specie_id;
+
+/* What specialty should Maisy Smith consider getting? Look for the species she gets the most. */
+
+select A.name, count(*) AS times_she_gets from visits V JOIN animals A ON V.animal_id = A.id where V.vet_id = 2 GROUP BY A.name ORDER BY 2 DESC LIMIT 1;
 
